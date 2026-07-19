@@ -65,16 +65,18 @@ def get_canva_url() -> str:
             
             target_page.on("response", handle_response)
             
-            with target_page.expect_navigation(timeout=30000):
-                target_page.locator("#getForm").evaluate("form => form.submit()")
+            with context.expect_page(timeout=30000) as final_page_info:
+                target_page.locator("#getForm button").click(force=True)
+
+            final_page = final_page_info.value
+            final_page.wait_for_load_state("domcontentloaded")
             
-            target_page.wait_for_load_state("domcontentloaded")
+            logger.info(f"Final URL: {final_page.url}")
             
-            if not final_url and "canva.com" in target_page.url:
-                final_url = target_page.url
-                
-            if not final_url:
-                raise Exception("Failed to capture Canva invite URL.")
+            if "canva.com" in final_page.url:
+                final_url = final_page.url
+            else:
+                raise Exception(f"Unexpected final URL: {final_page.url}")
                 
         except PlaywrightTimeoutError as e:
             logger.error(f"Browser Timeout: {e}")
