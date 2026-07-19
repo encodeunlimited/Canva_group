@@ -65,11 +65,24 @@ def get_canva_url() -> str:
             
             target_page.on("response", handle_response)
             
-            with context.expect_page(timeout=30000) as final_page_info:
-                target_page.locator("#getForm button").click(force=True)
+            logger.info(f"Form HTML: {target_page.locator('#getForm').inner_html()}")
+            logger.info(f"Buttons: {target_page.locator('#getForm button').count()}")
+            logger.info(f"Button visible: {target_page.locator('#getForm button').is_visible()}")
 
-            final_page = final_page_info.value
-            final_page.wait_for_load_state("domcontentloaded")
+            existing_pages = len(context.pages)
+
+            target_page.locator("#getForm button").click(force=True)
+
+            target_page.wait_for_timeout(5000)
+
+            if len(context.pages) > existing_pages:
+                final_page = context.pages[-1]
+                logger.info("New page detected")
+            else:
+                final_page = target_page
+                logger.info("Using current page")
+
+            final_page.wait_for_load_state("domcontentloaded", timeout=60000)
             
             logger.info(f"Final URL: {final_page.url}")
             
