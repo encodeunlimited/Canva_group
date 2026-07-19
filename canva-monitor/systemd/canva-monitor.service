@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/media/asanka/DATA/Canva_group/canva-monitor
-ExecStart=/media/asanka/DATA/Canva_group/canva-monitor/venv/bin/python run.py
+WorkingDirectory=/opt/canva-monitor
+ExecStart=/opt/canva-monitor/venv/bin/python run.py
 Restart=always
 RestartSec=10
 Environment="PYTHONUNBUFFERED=1"
