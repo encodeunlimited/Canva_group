@@ -16,8 +16,6 @@ from app.utils import extract_canva_token
 def main() -> None:
     """Main loop for the Canva Monitor."""
     logger.info("Starting Canva Monitor V2...")
-    first_check = True
-    
     while True:
         try:
             logger.info("-" * 40)
@@ -26,15 +24,13 @@ def main() -> None:
             url = get_canva_url()
             changed = check(url)
             
-            if changed or first_check:
+            if changed:
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 token = extract_canva_token(url)
                 
-                header = "🚨 <b>Canva Group Updated</b>" if changed else "🟢 <b>Monitor Started - Current Link</b>"
-                
                 message = (
-                    f"{header}\n\n"
-                    "<b>Invite Link</b>\n"
+                    "🚨 <b>Canva Group Updated</b>\n\n"
+                    "<b>New Invite Link</b>\n"
                     f"{url}\n\n"
                     "<b>Token</b>\n"
                     f"<code>{token}</code>\n\n"
@@ -43,8 +39,6 @@ def main() -> None:
                 )
                 if send(message):
                     logger.info("Telegram Sent")
-                    
-                first_check = False
             
         except Exception as e:
             logger.error(f"Error during check cycle: {e}. Retrying on next interval.")
