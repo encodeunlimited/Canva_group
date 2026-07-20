@@ -18,8 +18,8 @@ SCREENSHOTS_DIR.mkdir(exist_ok=True)
 
 # Configuration Variables
 BINGO_URL = os.getenv("BINGO_URL", "https://bingotingo.com/best-social-media-platforms/")
-WAIT_SECONDS = int(os.getenv("WAIT_SECONDS", "65"))
-CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL", "300"))  # 5 minutes
+WAIT_SECONDS = int(os.getenv("WAIT_SECONDS", "30"))
+CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL", "30"))  # 30 seconds
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8606686386:AAHSD0OaxC9FjyI79kD2eQaUyF12wsPg1n4")
 CHAT_ID = os.getenv("CHAT_ID", "8274409214")
