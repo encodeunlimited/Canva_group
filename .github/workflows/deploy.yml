@@ -30,5 +30,7 @@ jobs:
           cd /opt/canva-monitor
           chmod +x install.sh
           ./install.sh
+          sudo cp systemd/canva-monitor.service /etc/systemd/system/
           sudo systemctl daemon-reload
+          sudo systemctl enable canva-monitor.service
           sudo systemctl restart canva-monitor.service
