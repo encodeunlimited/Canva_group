@@ -75,21 +75,31 @@ def get_canva_url() -> str:
 
             target_page.wait_for_timeout(5000)
 
-            if len(context.pages) > existing_pages:
-                final_page = context.pages[-1]
-                logger.info("New page detected")
-            else:
-                final_page = target_page
-                logger.info("Using current page")
+            # 1. Check if the interceptor caught it or if any open tab is Canva
+            if not final_url:
+                for p_item in context.pages:
+                    if "canva.com" in p_item.url:
+                        final_url = p_item.url
+                        break
 
-            final_page.wait_for_load_state("domcontentloaded", timeout=60000)
-            
-            logger.info(f"Final URL: {final_page.url}")
-            
-            if "canva.com" in final_page.url:
-                final_url = final_page.url
-            else:
+            # 2. If it was an ad popup, close it and try clicking the button again
+            if not final_url and len(context.pages) > existing_pages:
+                logger.info("Ad popup detected instead of Canva. Closing it and clicking again...")
+                context.pages[-1].close()
+                target_page.locator("#getForm button").click(force=True)
+                target_page.wait_for_timeout(5000)
+                
+                for p_item in context.pages:
+                    if "canva.com" in p_item.url:
+                        final_url = p_item.url
+                        break
+
+            # 3. Final fallback validation
+            if not final_url:
+                final_page = context.pages[-1]
                 raise Exception(f"Unexpected final URL: {final_page.url}")
+                
+            logger.info(f"Final URL found: {final_url}")
                 
         except PlaywrightTimeoutError as e:
             logger.error(f"Browser Timeout: {e}")
